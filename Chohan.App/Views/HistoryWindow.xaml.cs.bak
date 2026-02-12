@@ -1,0 +1,27 @@
+using System.Windows;
+using Chohan.App.ViewModels;
+
+namespace Chohan.App.Views;
+
+public partial class HistoryWindow : Window
+{
+    public HistoryWindow()
+    {
+        InitializeComponent();
+    }
+
+    private void Close_Click(object sender, RoutedEventArgs e) => Close();
+
+    private void ClearHistory_Click(object sender, RoutedEventArgs e)
+    {
+        var result = MessageBox.Show(
+            "このプロフィールの全履歴を削除しますか？\nこの操作は元に戻せません。",
+            "Chohan - 履歴クリア",
+            MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+        if (result == MessageBoxResult.Yes && DataContext is MainViewModel vm)
+        {
+            vm.ClearHistory();
+        }
+    }
+}

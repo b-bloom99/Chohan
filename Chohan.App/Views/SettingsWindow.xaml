@@ -1,0 +1,942 @@
+<Window x:Class="Chohan.App.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctrl="clr-namespace:Chohan.App.Controls"
+        xmlns:conv="clr-namespace:Chohan.App.Converters"
+        Title="Chohan - 設定"
+        Width="1000"
+        Height="780"
+        MinWidth="860"
+        MinHeight="700"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgDarkBrush}"
+        ResizeMode="CanResize"
+        Closed="Window_Closed">
+
+    <Window.Resources>
+        <conv:HexToColorConverter x:Key="HexToColor"/>
+
+        <Style x:Key="TriggerSelectButton"
+                TargetType="RadioButton">
+            <Setter Property="Foreground"
+                    Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="FontFamily"
+                    Value="{StaticResource MainFont}"/>
+            <Setter Property="FontSize"
+                    Value="12"/>
+            <Setter Property="Padding"
+                    Value="12,6"/>
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="bd"
+                                Background="{StaticResource BgMediumBrush}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}"
+                                BorderThickness="2"
+                                BorderBrush="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked"
+                                    Value="True">
+                                <Setter TargetName="bd"
+                                        Property="BorderBrush"
+                                        Value="{StaticResource AccentGreenBrush}"/>
+                                <Setter Property="Foreground"
+                                        Value="{StaticResource TextPrimaryBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver"
+                                    Value="True">
+                                <Setter TargetName="bd"
+                                        Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="#3D3D5C"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TabHeaderStyle"
+                TargetType="TabItem">
+            <Setter Property="Foreground"
+                    Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="FontFamily"
+                    Value="{StaticResource MainFont}"/>
+            <Setter Property="FontSize"
+                    Value="13"/>
+            <Setter Property="Padding"
+                    Value="16,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="bd"
+                                Padding="{TemplateBinding Padding}"
+                                Background="Transparent"
+                                BorderThickness="0,0,0,2"
+                                BorderBrush="Transparent"
+                                Cursor="Hand">
+                            <ContentPresenter ContentSource="Header"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected"
+                                    Value="True">
+                                <Setter TargetName="bd"
+                                        Property="BorderBrush"
+                                        Value="{StaticResource AccentGreenBrush}"/>
+                                <Setter Property="Foreground"
+                                        Value="{StaticResource TextPrimaryBrush}"/>
+                                <Setter Property="FontWeight"
+                                        Value="SemiBold"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver"
+                                    Value="True">
+                                <Setter TargetName="bd"
+                                        Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="#2D2D44"
+                                                Opacity="0.5"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DarkTextBox"
+                TargetType="TextBox">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="#2D2D44"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground"
+                    Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <SolidColorBrush Color="#4D4D6C"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+            <Setter Property="Padding"
+                    Value="8,6"/>
+            <Setter Property="FontFamily"
+                    Value="{StaticResource MainFont}"/>
+            <Setter Property="FontSize"
+                    Value="13"/>
+            <Setter Property="CaretBrush"
+                    Value="{StaticResource TextPrimaryBrush}"/>
+        </Style>
+
+        <Style x:Key="DarkPasswordBox"
+                TargetType="PasswordBox">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="#2D2D44"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground"
+                    Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <SolidColorBrush Color="#4D4D6C"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+            <Setter Property="Padding"
+                    Value="8,6"/>
+            <Setter Property="FontFamily"
+                    Value="{StaticResource MainFont}"/>
+            <Setter Property="FontSize"
+                    Value="13"/>
+            <Setter Property="CaretBrush"
+                    Value="{StaticResource TextPrimaryBrush}"/>
+        </Style>
+
+        <Style x:Key="TwitchButton"
+                TargetType="Button">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="#9146FF"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground"
+                    Value="White"/>
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+            <Setter Property="FontFamily"
+                    Value="{StaticResource MainFont}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="16,0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                    Value="True">
+                                <Setter TargetName="bd"
+                                        Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="#A970FF"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsEnabled"
+                                    Value="False">
+                                <Setter Property="Opacity"
+                                        Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- プロファイル選択バー -->
+        <DockPanel Grid.Row="0"
+                Margin="0,0,0,8">
+            <TextBlock DockPanel.Dock="Left"
+                    Text="プロファイル:"
+                    Foreground="{StaticResource TextSecondaryBrush}"
+                    FontFamily="{StaticResource MainFont}"
+                    FontSize="12"
+                    VerticalAlignment="Center"
+                    Margin="0,0,8,0"/>
+            <Button DockPanel.Dock="Right"
+                    Content="&#x1F5D1;"
+                    Style="{StaticResource CompactButton}"
+                    Command="{Binding DeleteProfileCommand}"
+                    ToolTip="削除"
+                    Width="32"
+                    Margin="4,0,0,0"/>
+            <Button DockPanel.Dock="Right"
+                    Content="&#x270F;"
+                    Style="{StaticResource CompactButton}"
+                    Command="{Binding RenameProfileCommand}"
+                    ToolTip="リネーム"
+                    Width="32"
+                    Margin="4,0,0,0"/>
+            <Button DockPanel.Dock="Right"
+                    Content="＋ 新規"
+                    Style="{StaticResource CompactButton}"
+                    Command="{Binding CreateProfileCommand}"
+                    Margin="4,0,0,0"/>
+            <ComboBox ItemsSource="{Binding ProfileNames}"
+                    SelectedItem="{Binding SelectedProfileName}"
+                    FontFamily="{StaticResource MainFont}"
+                    FontSize="12"
+                    MinWidth="160"/>
+        </DockPanel>
+
+        <!-- タブコントロール -->
+        <TabControl Grid.Row="1"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="0,8,0,0">
+
+            <!-- ① 認識設定 -->
+            <TabItem Header="&#x1F3AF; 認識設定"
+                    Style="{StaticResource TabHeaderStyle}">
+                <Grid Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0"
+                            Orientation="Horizontal"
+                            Margin="0,0,0,8">
+                        <RadioButton Content="&#x1F7E2; 開始"
+                                Style="{StaticResource TriggerSelectButton}"
+                                IsChecked="True"
+                                Click="TriggerSelect_Start"
+                                Margin="0,0,4,0"/>
+                        <RadioButton Content="&#x1F3C6; 勝利"
+                                Style="{StaticResource TriggerSelectButton}"
+                                Click="TriggerSelect_Win"
+                                Margin="0,0,4,0"/>
+                        <RadioButton Content="&#x1F480; 敗北"
+                                Style="{StaticResource TriggerSelectButton}"
+                                Click="TriggerSelect_Lose"/>
+                    </StackPanel>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="1.2*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0"
+                                    Background="{StaticResource BgMediumBrush}"
+                                    CornerRadius="6"
+                                    ClipToBounds="True">
+                                <ctrl:RoiEditorControl x:Name="RoiEditor"
+                                        SourceImage="{Binding PreviewImage}"
+                                        MatchScore="{Binding LiveMatchScore}"
+                                        Threshold="{Binding CurrentThreshold}"
+                                        ShowMagnifier="True"/>
+                            </Border>
+                            <StackPanel Grid.Row="1"
+                                    Orientation="Horizontal"
+                                    Margin="0,6,0,0">
+                                <Button Content="{Binding FreezeButtonText}"
+                                        Style="{StaticResource CompactButton}"
+                                        Command="{Binding ToggleFreezeCommand}"
+                                        Margin="0,0,8,0"
+                                        MinWidth="80"/>
+                                <Button Content="{Binding RegisterButtonText}"
+                                        Style="{StaticResource CompactButton}"
+                                        Click="RegisterButton_Click"
+                                        Margin="0,0,8,0"
+                                        MinWidth="160"/>
+                                <Button Content="&#x1F5D1; クリア"
+                                        Style="{StaticResource CompactButton}"
+                                        Command="{Binding ClearTemplateCommand}"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0"
+                                    Text="登録テンプレート"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    Margin="0,0,0,6"/>
+                            <StackPanel Grid.Row="1">
+                                <Border Background="{StaticResource BgMediumBrush}"
+                                        CornerRadius="4"
+                                        Margin="0,0,0,4"
+                                        Height="60">
+                                    <Grid>
+                                        <Image Source="{Binding StartTemplatePreview}"
+                                                Stretch="Uniform"
+                                                HorizontalAlignment="Center"/>
+                                        <TextBlock Text="開始"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                FontSize="10"
+                                                Opacity="0.6"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Top"
+                                                Margin="4,2"/>
+                                        <TextBlock Text="(未登録)"
+                                                FontSize="10"
+                                                Opacity="0.4"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding StartTemplatePreview}"
+                                                                Value="{x:Null}">
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style></TextBlock>
+                                    </Grid>
+                                </Border>
+                                <Border Background="{StaticResource BgMediumBrush}"
+                                        CornerRadius="4"
+                                        Margin="0,0,0,4"
+                                        Height="60">
+                                    <Grid>
+                                        <Image Source="{Binding WinTemplatePreview}"
+                                                Stretch="Uniform"
+                                                HorizontalAlignment="Center"/>
+                                        <TextBlock Text="勝利"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                FontSize="10"
+                                                Opacity="0.6"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Top"
+                                                Margin="4,2"/>
+                                        <TextBlock Text="(未登録)"
+                                                FontSize="10"
+                                                Opacity="0.4"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding WinTemplatePreview}"
+                                                                Value="{x:Null}">
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style></TextBlock>
+                                    </Grid>
+                                </Border>
+                                <Border Background="{StaticResource BgMediumBrush}"
+                                        CornerRadius="4"
+                                        Margin="0,0,0,4"
+                                        Height="60">
+                                    <Grid>
+                                        <Image Source="{Binding LoseTemplatePreview}"
+                                                Stretch="Uniform"
+                                                HorizontalAlignment="Center"/>
+                                        <TextBlock Text="敗北"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                FontSize="10"
+                                                Opacity="0.6"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Top"
+                                                Margin="4,2"/>
+                                        <TextBlock Text="(未登録)"
+                                                FontSize="10"
+                                                Opacity="0.4"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding LoseTemplatePreview}"
+                                                                Value="{x:Null}">
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style></TextBlock>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                            <Border Grid.Row="2"
+                                    Background="{StaticResource BgMediumBrush}"
+                                    CornerRadius="6"
+                                    Padding="10,8"
+                                    Margin="0,8,0,0">
+                                <StackPanel>
+                                    <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
+                                            FontFamily="{StaticResource MainFont}"
+                                            FontSize="11"
+                                            Margin="0,0,0,4"><Run Text="対象: "/><Run Text="{Binding SelectedTriggerName, Mode=OneWay}"
+                                                FontWeight="SemiBold"
+                                                Foreground="{StaticResource TextPrimaryBrush}"/><Run Text=" — "/><Run Text="{Binding TemplateStatusText, Mode=OneWay}"/></TextBlock>
+                                    <DockPanel Margin="0,4,0,2">
+                                        <TextBlock DockPanel.Dock="Left"
+                                                Text="一致率:"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                FontFamily="{StaticResource MainFont}"
+                                                FontSize="12"
+                                                VerticalAlignment="Center"/>
+                                        <TextBlock DockPanel.Dock="Right"
+                                                Text="{Binding LiveMatchScoreText}"
+                                                Foreground="{Binding MatchStateColorHex, Converter={StaticResource HexToColor}}"
+                                                FontFamily="{StaticResource MainFont}"
+                                                FontSize="16"
+                                                FontWeight="Bold"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                    <ProgressBar Style="{StaticResource MatchScoreBar}"
+                                            Value="{Binding LiveMatchScore, Mode=OneWay}"
+                                            Height="6"
+                                            Margin="0,2,0,4"/>
+                                    <TextBlock Text="{Binding MatchStateText}"
+                                            Foreground="{Binding MatchStateColorHex, Converter={StaticResource HexToColor}}"
+                                            FontFamily="{StaticResource MainFont}"
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            HorizontalAlignment="Center"
+                                            Margin="0,0,0,8"/>
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Left"
+                                                Text="閾値:"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                FontFamily="{StaticResource MainFont}"
+                                                FontSize="11"
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,6,0"/>
+                                        <TextBlock DockPanel.Dock="Right"
+                                                Text="{Binding CurrentThresholdText}"
+                                                Foreground="{StaticResource TextPrimaryBrush}"
+                                                FontFamily="{StaticResource MainFont}"
+                                                FontSize="11"
+                                                VerticalAlignment="Center"
+                                                Width="36"
+                                                TextAlignment="Right"/>
+                                        <Slider Minimum="0.50"
+                                                Maximum="1.00"
+                                                Value="{Binding CurrentThreshold}"
+                                                TickFrequency="0.05"
+                                                IsSnapToTickEnabled="True"
+                                                VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Grid.Row="3"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="10"
+                                    TextWrapping="Wrap"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"
+                                    Text="&#x1F4A1; 左のプレビューでドラッグしてROIを指定 → 登録ボタンでテンプレートを保存。"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- ② Twitch設定 -->
+            <TabItem Header="&#x1F4FA; Twitch設定"
+                    Style="{StaticResource TabHeaderStyle}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                        Margin="0,8,0,0">
+                    <StackPanel MaxWidth="540">
+                        <Border Background="{StaticResource BgMediumBrush}"
+                                CornerRadius="8"
+                                Padding="16,12"
+                                Margin="0,0,0,16">
+                            <DockPanel>
+                                <Ellipse DockPanel.Dock="Left"
+                                        Width="12"
+                                        Height="12"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Fill="{Binding TwitchStatusColorHex, Converter={StaticResource HexToColor}}"/>
+                                <Button DockPanel.Dock="Right"
+                                        Content="ログアウト"
+                                        Command="{Binding LogoutCommand}"
+                                        VerticalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button"
+                                                BasedOn="{StaticResource CompactButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsTwitchAuthenticated}"
+                                                        Value="False">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <TextBlock Text="{Binding TwitchConnectionStatusText}"
+                                        Foreground="{Binding TwitchStatusColorHex, Converter={StaticResource HexToColor}}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="Client ID"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    Margin="0,0,0,4"/>
+                            <TextBox Style="{StaticResource DarkTextBox}"
+                                    Text="{Binding TwitchClientId, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Client Secret"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    Margin="0,0,0,4"/>
+                            <PasswordBox x:Name="ClientSecretBox"
+                                    Style="{StaticResource DarkPasswordBox}"
+                                    PasswordChanged="ClientSecretBox_PasswordChanged"/>
+                        </StackPanel>
+                        <Button Content="{Binding TwitchAuthButtonText}"
+                                Command="{Binding AuthenticateCommand}"
+                                IsEnabled="{Binding IsTwitchNotAuthenticated}"
+                                Height="38"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Cursor="Hand"
+                                Margin="0,0,0,6"
+                                Style="{StaticResource TwitchButton}"/>
+                        <TextBlock Text="{Binding TwitchStatusMessage}"
+                                Foreground="{StaticResource TextSecondaryBrush}"
+                                FontFamily="{StaticResource MainFont}"
+                                FontSize="11"
+                                TextWrapping="Wrap"
+                                Margin="0,0,0,16"/>
+                        <Separator Background="{StaticResource BgLightBrush}"
+                                Margin="0,0,0,16"/>
+                        <TextBlock Text="&#x1F3AF; 予測（Prediction）設定"
+                                Foreground="{StaticResource TextPrimaryBrush}"
+                                FontFamily="{StaticResource MainFont}"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Margin="0,0,0,10"/>
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBlock DockPanel.Dock="Left"
+                                    Text="タイトル:"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    VerticalAlignment="Center"
+                                    Width="70"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                    Text="{Binding PredictionTitleLength}"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontSize="10"
+                                    Opacity="0.6"
+                                    VerticalAlignment="Center"
+                                    Margin="6,0,0,0"/>
+                            <TextBox Text="{Binding PredictionTitle, UpdateSourceTrigger=PropertyChanged}"
+                                    MaxLength="45"
+                                    FontSize="12"
+                                    FontFamily="{StaticResource MainFont}"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBlock DockPanel.Dock="Left"
+                                    Text="勝利ラベル:"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    VerticalAlignment="Center"
+                                    Width="70"/>
+                            <TextBox Text="{Binding OutcomeWinLabel, UpdateSourceTrigger=PropertyChanged}"
+                                    MaxLength="25"
+                                    FontSize="12"
+                                    FontFamily="{StaticResource MainFont}"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBlock DockPanel.Dock="Left"
+                                    Text="敗北ラベル:"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    VerticalAlignment="Center"
+                                    Width="70"/>
+                            <TextBox Text="{Binding OutcomeLoseLabel, UpdateSourceTrigger=PropertyChanged}"
+                                    MaxLength="25"
+                                    FontSize="12"
+                                    FontFamily="{StaticResource MainFont}"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBlock DockPanel.Dock="Left"
+                                    Text="投票時間:"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    VerticalAlignment="Center"
+                                    Width="70"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                    Text="{Binding PredictionDurationText}"
+                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    VerticalAlignment="Center"
+                                    Width="60"
+                                    TextAlignment="Right"/>
+                            <Slider Minimum="30"
+                                    Maximum="1800"
+                                    Value="{Binding PredictionDurationSeconds}"
+                                    TickFrequency="30"
+                                    IsSnapToTickEnabled="True"
+                                    VerticalAlignment="Center"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBlock DockPanel.Dock="Left"
+                                    Text="確定後待機:"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    VerticalAlignment="Center"
+                                    Width="70"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                    Text="{Binding ResolvedDelaySeconds, StringFormat='{}{0}秒'}"
+                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="12"
+                                    VerticalAlignment="Center"
+                                    Width="60"
+                                    TextAlignment="Right"/>
+                            <Slider Minimum="1"
+                                    Maximum="30"
+                                    Value="{Binding ResolvedDelaySeconds}"
+                                    TickFrequency="1"
+                                    IsSnapToTickEnabled="True"
+                                    VerticalAlignment="Center"/>
+                        </DockPanel>
+                        <Border Background="{StaticResource BgMediumBrush}"
+                                CornerRadius="6"
+                                Padding="12,10"
+                                Margin="0,8,0,0">
+                            <StackPanel>
+                                <TextBlock Text="&#x1F4CB; 要求するスコープ"
+                                        Foreground="{StaticResource TextPrimaryBrush}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Margin="0,0,0,6"/>
+                                <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="10"
+                                        TextWrapping="Wrap"
+                                        Text="• channel:read:predictions — 予想の状態を確認"/>
+                                <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="10"
+                                        TextWrapping="Wrap"
+                                        Text="• channel:manage:predictions — 予想の作成・確定・キャンセル"/>
+                                <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="10"
+                                        TextWrapping="Wrap"
+                                        Margin="0,6,0,0"
+                                        Opacity="0.7"
+                                        Text="&#x1F4A1; トークンはWindows DPAPIで暗号化されます。"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ③ 運用・履歴 -->
+            <TabItem Header="&#x1F4CB; 運用・履歴"
+                    Style="{StaticResource TabHeaderStyle}">
+                <Grid Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0"
+                            Background="{StaticResource BgMediumBrush}"
+                            CornerRadius="6"
+                            Padding="12,10"
+                            Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="&#x2699; 運用設定"
+                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Margin="0,0,0,10"/>
+                            <DockPanel Margin="0,0,0,8">
+                                <TextBlock DockPanel.Dock="Left"
+                                        Text="常時投票モード:"
+                                        Foreground="{StaticResource TextSecondaryBrush}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="12"
+                                        VerticalAlignment="Center"
+                                        Width="100"/>
+                                <CheckBox IsChecked="{Binding IsAlwaysVotingMode}"
+                                        Foreground="{StaticResource TextSecondaryBrush}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="11"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="ON にすると開始トリガーをスキップして常時投票"/>
+                                </CheckBox>
+                            </DockPanel>
+                            <DockPanel Margin="0,0,0,4">
+                                <TextBlock DockPanel.Dock="Left"
+                                        Text="カメラデバイス:"
+                                        Foreground="{StaticResource TextSecondaryBrush}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="12"
+                                        VerticalAlignment="Center"
+                                        Width="100"/>
+                                <Button DockPanel.Dock="Right"
+                                        Content="&#x21BB;"
+                                        Style="{StaticResource CompactButton}"
+                                        Command="{Binding RefreshDevicesCommand}"
+                                        Width="28"
+                                        ToolTip="再検出"
+                                        Margin="4,0,0,0"/>
+                                <ComboBox ItemsSource="{Binding DeviceNames}"
+                                        SelectedIndex="{Binding SelectedDeviceIndex}"
+                                        FontFamily="{StaticResource MainFont}"
+                                        FontSize="12"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1"
+                            Background="{StaticResource BgMediumBrush}"
+                            CornerRadius="6"
+                            Padding="12,8"
+                            Margin="0,0,0,8">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Left"
+                                    Text="&#x1F4CA; 判定履歴"
+                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    VerticalAlignment="Center"/>
+                            <Button DockPanel.Dock="Right"
+                                    Content="&#x1F5D1; クリア"
+                                    Style="{StaticResource CompactButton}"
+                                    Click="ClearHistory_Click"
+                                    Margin="8,0,0,0"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                    Text="{Binding TotalEntriesText}"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="11"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"/>
+                            <TextBlock DockPanel.Dock="Left"
+                                    Text="{Binding HistoryStatsText}"
+                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    FontFamily="{StaticResource MainFont}"
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    VerticalAlignment="Center"
+                                    Margin="16,0,0,0"/>
+                        </DockPanel>
+                    </Border>
+                    <Border Grid.Row="2"
+                            Background="{StaticResource BgMediumBrush}"
+                            CornerRadius="6"
+                            Padding="2">
+                        <ListView ItemsSource="{Binding RecentHistory}"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource TextPrimaryBrush}"
+                                FontFamily="{StaticResource MainFont}"
+                                FontSize="11"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Padding"
+                                            Value="6,4"/>
+                                    <Setter Property="Margin"
+                                            Value="0"/>
+                                    <Setter Property="HorizontalContentAlignment"
+                                            Value="Stretch"/>
+                                    <Setter Property="Background"
+                                            Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <Border x:Name="bd"
+                                                        Padding="{TemplateBinding Padding}"
+                                                        Background="Transparent"
+                                                        BorderBrush="{StaticResource BgLightBrush}"
+                                                        BorderThickness="0,0,0,1">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver"
+                                                            Value="True">
+                                                        <Setter TargetName="bd"
+                                                                Property="Background">
+                                                            <Setter.Value>
+                                                                <SolidColorBrush Color="#3D3D5C"
+                                                                        Opacity="0.5"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Left"
+                                                Text="{Binding TimestampLocal}"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                FontSize="10"
+                                                Width="52"
+                                                VerticalAlignment="Center"/>
+
+                                        <TextBlock DockPanel.Dock="Left"
+                                                Text="{Binding EventDisplayName}"
+                                                FontSize="12"
+                                                FontWeight="SemiBold"
+                                                Width="90"
+                                                VerticalAlignment="Center"/>
+
+                                        <TextBlock DockPanel.Dock="Left"
+                                                   Text="{Binding PredictionStatusText}"
+                                                   Foreground="{Binding PredictionStatusColor}"
+                                                   FontSize="10"
+                                                FontWeight="Bold"
+                                                   Width="60"
+                                                VerticalAlignment="Center"
+                                                   Margin="4,0,0,0"/>
+
+                                        <TextBlock DockPanel.Dock="Right"
+                                                Text="{Binding ConfidenceText}"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                FontSize="10"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"/>
+
+                                        <TextBlock Text="{Binding PredictionIdShort}"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                FontSize="9"
+                                                Opacity="0.6"
+                                                VerticalAlignment="Center"
+                                                TextTrimming="CharacterEllipsis"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- フッター -->
+        <DockPanel Grid.Row="2"
+                Margin="0,10,0,0">
+            <Button DockPanel.Dock="Right"
+                    Content="閉じる"
+                    Style="{StaticResource CompactButton}"
+                    Click="CloseButton_Click"
+                    Width="80"/>
+            <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
+                    FontFamily="{StaticResource MainFont}"
+                    FontSize="10"
+                    VerticalAlignment="Center"
+                    Opacity="0.5"
+                    Text="設定は自動保存されます"/>
+        </DockPanel>
+    </Grid>
+</Window>

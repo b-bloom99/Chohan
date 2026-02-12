@@ -1,0 +1,234 @@
+<Window x:Class="Chohan.App.Views.TwitchSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:Chohan.App.Converters"
+        Title="Chohan - Twitch設定"
+        Width="500" Height="520"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgDarkBrush}"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <conv:HexToColorConverter x:Key="HexToColor" />
+
+        <!-- テキストボックススタイル -->
+        <Style x:Key="DarkTextBox" TargetType="TextBox">
+            <Setter Property="Background">
+                <Setter.Value><SolidColorBrush Color="#2D2D44" /></Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush">
+                <Setter.Value><SolidColorBrush Color="#4D4D6C" /></Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="FontFamily" Value="{StaticResource MainFont}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CaretBrush" Value="{StaticResource TextPrimaryBrush}" />
+        </Style>
+
+        <Style x:Key="DarkPasswordBox" TargetType="PasswordBox">
+            <Setter Property="Background">
+                <Setter.Value><SolidColorBrush Color="#2D2D44" /></Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush">
+                <Setter.Value><SolidColorBrush Color="#4D4D6C" /></Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="FontFamily" Value="{StaticResource MainFont}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CaretBrush" Value="{StaticResource TextPrimaryBrush}" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ====== Row 0: ヘッダー ====== -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Twitch 連携設定"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       FontFamily="{StaticResource MainFont}"
+                       FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="Twitch Developer Consoleで取得したClient情報を入力し、認証してください。"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       FontFamily="{StaticResource MainFont}"
+                       FontSize="11" TextWrapping="Wrap"
+                       Margin="0,4,0,0" />
+        </StackPanel>
+
+        <!-- ====== Row 1: 接続状態カード ====== -->
+        <Border Grid.Row="1"
+                Background="{StaticResource BgMediumBrush}"
+                CornerRadius="8" Padding="16,12"
+                Margin="0,0,0,16">
+            <DockPanel>
+                <!-- 状態アイコン -->
+                <Ellipse DockPanel.Dock="Left"
+                         Width="12" Height="12" Margin="0,0,10,0"
+                         VerticalAlignment="Center"
+                         Fill="{Binding StatusColorHex, Converter={StaticResource HexToColor}}" />
+
+                <!-- ログアウトボタン -->
+                <Button DockPanel.Dock="Right"
+                        Content="ログアウト"
+                        Command="{Binding LogoutCommand}"
+                        VerticalAlignment="Center">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource CompactButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAuthenticated}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- 接続状態テキスト -->
+                <TextBlock Text="{Binding ConnectionStatusText}"
+                           Foreground="{Binding StatusColorHex, Converter={StaticResource HexToColor}}"
+                           FontFamily="{StaticResource MainFont}"
+                           FontSize="13" FontWeight="SemiBold"
+                           VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+
+        <!-- ====== Row 2: Client ID入力 ====== -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,12">
+            <TextBlock Text="Client ID"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       FontFamily="{StaticResource MainFont}"
+                       FontSize="12" Margin="0,0,0,4" />
+            <TextBox Style="{StaticResource DarkTextBox}"
+                     Text="{Binding ClientId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+
+        <!-- ====== Row 3: Client Secret入力 ====== -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,16">
+            <TextBlock Text="Client Secret"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       FontFamily="{StaticResource MainFont}"
+                       FontSize="12" Margin="0,0,0,4" />
+            <PasswordBox x:Name="ClientSecretBox"
+                         Style="{StaticResource DarkPasswordBox}"
+                         PasswordChanged="ClientSecretBox_PasswordChanged" />
+        </StackPanel>
+
+        <!-- ====== Row 4: 認証ボタン ====== -->
+        <StackPanel Grid.Row="4" Margin="0,0,0,12">
+            <!-- 認証ボタン -->
+            <Button Content="{Binding AuthButtonText}"
+                    Command="{Binding AuthenticateCommand}"
+                    IsEnabled="{Binding IsNotAuthenticated}"
+                    Height="38"
+                    FontSize="14" FontWeight="SemiBold"
+                    Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background">
+                            <Setter.Value><SolidColorBrush Color="#9146FF" /></Setter.Value>
+                        </Setter>
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="FontFamily" Value="{StaticResource MainFont}" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="bd"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="6"
+                                            Padding="16,0">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bd" Property="Background">
+                                                <Setter.Value><SolidColorBrush Color="#A970FF" /></Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- キャンセルリンク -->
+            <TextBlock HorizontalAlignment="Center" Margin="0,6,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsAuthenticating}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+                <Hyperlink Command="{Binding CancelAuthCommand}">
+                    <Run Text="キャンセル" Foreground="{StaticResource TextSecondaryBrush}" />
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- ====== Row 5: ステータスメッセージ + ヘルプ ====== -->
+        <StackPanel Grid.Row="5" VerticalAlignment="Top">
+            <!-- ステータスメッセージ -->
+            <TextBlock Text="{Binding StatusMessage}"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       FontFamily="{StaticResource MainFont}"
+                       FontSize="11" TextWrapping="Wrap"
+                       Margin="0,0,0,16" />
+
+            <!-- スコープ説明 -->
+            <Border Background="{StaticResource BgMediumBrush}"
+                    CornerRadius="6" Padding="12,10">
+                <StackPanel>
+                    <TextBlock Text="📋 要求するスコープ（権限）"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontFamily="{StaticResource MainFont}"
+                               FontSize="11" FontWeight="SemiBold"
+                               Margin="0,0,0,6" />
+                    <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
+                               FontFamily="{StaticResource MainFont}"
+                               FontSize="10" TextWrapping="Wrap"
+                               Text="• channel:read:predictions — 予想の状態を確認" />
+                    <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
+                               FontFamily="{StaticResource MainFont}"
+                               FontSize="10" TextWrapping="Wrap"
+                               Text="• channel:manage:predictions — 予想の作成・確定・キャンセル" />
+                    <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
+                               FontFamily="{StaticResource MainFont}"
+                               FontSize="10" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Opacity="0.7"
+                               Text="💡 トークンはWindows DPAPIで暗号化され、このPCのこのユーザーのみ復号可能です。" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- ====== Row 6: フッター ====== -->
+        <Button Grid.Row="6"
+                Content="閉じる"
+                Style="{StaticResource CompactButton}"
+                Click="CloseButton_Click"
+                Width="80"
+                HorizontalAlignment="Right"
+                Margin="0,12,0,0" />
+    </Grid>
+</Window>
