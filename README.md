@@ -1,72 +1,70 @@
-# Chohan (丁半) - プロジェクト構成
+# Chohan - Twitch Prediction Auto-Manager
 
-## ディレクトリ構成
+**「Chohan」** は、Twitch配信での「予想（賭け機能）」を、OBS Studioと画面認識（AI）を使って**完全に自動化**するツールです。
 
-```
-Chohan/
-├── Chohan.sln
-├── README.md
-│
-├── Chohan.Core/                    # ビジネスロジック層 (クラスライブラリ)
-│   ├── Chohan.Core.csproj
-│   ├── Capture/
-│   │   └── CaptureEngine.cs        # DirectShow経由のカメラキャプチャ
-│   ├── Config/
-│   │   ├── AppConfig.cs             # 共通設定モデル (config.json)
-│   │   ├── GameProfile.cs           # ゲーム別プロフィール (Profiles/*.json)
-│   │   ├── ConfigService.cs         # 設定永続化サービス
-│   │   └── DpapiHelper.cs           # DPAPI暗号化ヘルパー
-│   ├── Recognition/
-│   │   ├── TemplateMatchingEngine.cs
-│   │   ├── RoiSettings.cs
-│   │   └── TriggerConfig.cs
-│   ├── State/
-│   │   ├── GameState.cs
-│   │   └── StateMachine.cs
-│   └── Twitch/
-│       ├── TwitchOAuthConfig.cs
-│       ├── TwitchOAuthService.cs
-│       ├── TwitchPredictionService.cs
-│       └── TwitchTokenStore.cs
-│
-├── Chohan.App/                     # WPFアプリケーション層
-│   ├── Chohan.App.csproj
-│   ├── App.xaml / App.xaml.cs
-│   ├── Controls/
-│   │   └── RoiEditorControl.cs
-│   ├── Views/
-│   │   ├── MainWindow.xaml / .cs
-│   │   ├── SettingsWindow.xaml / .cs
-│   │   └── TwitchSettingsWindow.xaml / .cs
-│   ├── ViewModels/
-│   │   ├── ViewModelBase.cs
-│   │   ├── MainViewModel.cs
-│   │   ├── SettingsViewModel.cs
-│   │   └── TwitchSettingsViewModel.cs
-│   ├── Converters/
-│   └── Resources/Styles.xaml
+配信者が対戦に集中している間、本ソフトがゲーム画面から「勝利/敗北」を自動的に検知し、予測の作成から結果の確定までをすべて代行します。
 
-実行時ファイル構成（ポータブル形式）:
-  Chohan.exe
-  config.json                   ← 共通設定・暗号化トークン
-  Profiles/
-    Default.json                ← ゲーム別トリガー設定
-    StreetFighter6.json
-  Templates/
-    default_start.png           ← ROI切り抜きテンプレート画像
-```
+## 📺 OBS 仮想カメラとの連携
 
-## アーキテクチャ
+ゲーム画面の認識を行うために、**OBSの仮想カメラ機能**を利用してください。
 
-- **MVVM パターン**: View ↔ ViewModel ↔ Core(Model)
-- **Core層**: UI非依存。カメラキャプチャ、画像認識、状態管理を担う
-- **App層**: WPFのUI。CoreをDIまたは直接参照して利用
+1. **OBSの設定**: OBS右下のコントロールパネルにある「仮想カメラの開始」をクリックします。
+2. **Chohanでの確認**: 本アプリの設定>認識設定からOBSの映像が正しく取り込まれているかを確認してください。
 
-## 依存パッケージ
+## 📸 設定の実例：Slay the Spire
 
-| パッケージ | 用途 |
-|---|---|
-| OpenCvSharp4 | 画像処理・テンプレートマッチング |
-| OpenCvSharp4.runtime.win | Windows用ネイティブバインディング |
-| OpenCvSharp4.Extensions | BitmapSource変換等 |
-| DirectShowLib | OBS仮想カメラからのキャプチャ |
+Slay the Spireで自動的に予測を作成・処理するための設定例です。他にも様々な設定が考えられると思うので、自分がやりやすい方法・誤認識が少ない方法を試してみてください。
+
+### ① 開始画面（予測の作成）
+
+プレイ開始時の「レベル1 序章」をターゲットにします。
+
+* **ターゲット**: 画面中央上部に出現する **「レベル1 序章」** 周辺を指定。
+* **動作**: プレイの開始を検知して、自動でTwitchの予測（どちらが勝つか？）を開始します。
+
+![開始画面の設定例](docs/images/start.png)
+
+### ② 勝利画面（結果：勝ち）
+
+勝利後に流れるスタッフロールをターゲットにします。
+
+* **ターゲット**: スタッフロール開始時に大きく表示されるゲームロゴを範囲に指定。
+* **動作**: 自動で「勝ち」として結果を確定させます。
+
+![勝利画面の設定例](docs/images/win.png)
+
+### ③ 敗北画面（結果：負け）
+
+敗北時の「倒れているアイアンクラッド」をターゲットにします。敗北時に表示されるテキストのような、プレイごとに毎回変わってしまうものをターゲットにはしないように注意が必要です。
+
+* **ターゲット**: 画面左の **倒れているアイアンクラッド** を囲みます。
+* **動作**: 自動で「負け」として結果を確定させます。
+
+![敗北画面の設定例](docs/images/lose.png)
+
+### 最終的な登録テンプレート例
+最終的な登録例は以下のようになります。
+
+![最終的な設定例](docs/images/result.png)
+
+## 🚀 導入手順
+
+### 1. ダウンロード
+右側の **[Releases](https://github.com/b-bloom99/Chohan/releases)** から最新の `Chohan_v1.x.x_win-x64.zip` をダウンロードし、すべて展開してください。
+
+### 2. 起動
+展開されたフォルダ内の **`Chohan.App.exe`** を実行します。
+* *※「WindowsによってPCが保護されました」と出た場合は、「詳細情報」→「実行」をクリックしてください。*
+
+### 3. 初期設定
+1. **認識設定**: 上記の実例を参考に、各画面の認識範囲を指定してください。
+2. **Twitch連携**: 設定画面でアクセストークンを取得し、Twitchアカウントと連携してください。作成される予測のタイトル、ラベルなどを必要に応じて設定してください。
+3. **常時投票モード**: 開始画面なしで常に投票を行いたい場合、常時投票モードをONにしてください。 
+
+## 🛠 動作要件
+* Windows 10 / 11 (64bit)
+
+## 📥 バグ報告・ご意見はこちら
+GitHubのアカウントをお持ちでない方や、使い方がわからない方は、以下の専用フォームよりお気軽にご報告ください。
+
+👉 バグ報告・フィードバックフォーム: https://forms.gle/qXuGBirFKezmUC4T9
